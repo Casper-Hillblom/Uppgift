@@ -1,32 +1,42 @@
-﻿using Uppgift.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Uppgift.Models;
 
 namespace Uppgift.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public Task<User> Create(User user)
+        private readonly UserContext _context;
+        public UserRepository(UserContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<User> Create(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();  
+            return user;
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            _context.Users.Remove(await _context.Users.FindAsync(id));
+            await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<User>> Get()
+        public async Task<IEnumerable<User>> Get()
         {
-            throw new NotImplementedException();
+            return await _context.Users.ToListAsync();
         }
 
-        public Task<User> Get(int id)
+        public async Task<User> Get(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Users.FindAsync(id);
         }
 
-        public Task Update(User user)
+        public async Task Update(User user)
         {
-            throw new NotImplementedException();
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync(); 
         }
     }
 }
